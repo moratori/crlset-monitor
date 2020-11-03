@@ -2,7 +2,12 @@
 
 # CRLset Monitor
 
-https://twitter.com/crlsetmon
+[https://twitter.com/crlsetmon](https://twitter.com/crlsetmon)
+
+## Abstract
+
+This tool is for monitoring CRLset. CRLset is Chromium's original mechanism for managing certificate revocation status.
+This tool allows you to see which intermediate certificates are listed in CRLset.
 
 ## About CRLset
 
