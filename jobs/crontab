@@ -1,0 +1,6 @@
+# run operational commands
+05 09 * * * /path/to/bin/run_compress_for_log_files.sh
+
+# run application
+0  */1 * * * /path/to/bin/main_download_crlset.sh
+30 */1 * * * /path/to/bin/main_check_and_notify.sh

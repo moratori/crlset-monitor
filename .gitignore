@@ -1,0 +1,15 @@
+.mypy_cache/
+.venv/
+.vscode/
+*.pyc
+appcache/
+Pipfile.lock
+logs/*.log
+logs/*.log.*
+test/htmlcov
+test/.coverage
+
+test/test_*.py
+static/serials/*.pem
+static/rawcrlset
+
