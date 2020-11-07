@@ -24,6 +24,8 @@ class Notifier:
         self.access_token = cnfs.notify.twitter_access_token
         self.access_token_secret = \
             cnfs.notify.twitter_access_token_secret
+        self.twitter_message_length = \
+            cnfs.notify.twitter_message_length
 
         self.notify_target = notify_target
 
@@ -38,7 +40,7 @@ class Notifier:
         tmp_mes = template % (caname, len(added))
         serials = "\n".join(added)
 
-        if len(tmp_mes) + len(serials) > 140:
+        if len(tmp_mes) + len(serials) > self.twitter_message_length:
             return tmp_mes
 
         return tmp_mes + serials
