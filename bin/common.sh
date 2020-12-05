@@ -7,7 +7,7 @@ SOURCES="${PROJECT_ROOT}/src"
 LOGS="${PROJECT_ROOT}/logs"
 TESTS="${PROJECT_ROOT}/test"
 VENV="${PROJECT_ROOT}/.venv"
-TIMEOUT_DURATION="600"
+TIMEOUT_DURATION="900"
 TOPLEVEL_SCRIPT_EXT="py"
 #######################################
 
