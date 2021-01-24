@@ -12,4 +12,4 @@ test/.coverage
 test/test_*.py
 static/serials/*.pem
 static/rawcrlset
-
+static/icalist
