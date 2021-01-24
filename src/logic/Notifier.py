@@ -4,6 +4,9 @@ import requests
 import json
 import time
 import tweepy
+
+import logic.CCADBLoader as ccadbloader
+
 from logging import getLogger
 from typing import List
 from typing import Tuple
@@ -16,7 +19,8 @@ class Notifier:
 
     def __init__(self, cnfg, cnfs,
                  notify_target: List[Tuple[str, List[str], List[str]]]):
-
+        self.cnfg = cnfg
+        self.cnfs = cnfs
         self.slack_url = cnfs.notify.slack
         self.notify_wait = cnfs.notify.wait
         self.crtsh_base_url = cnfs.notify.crtsh_base_url
@@ -33,20 +37,21 @@ class Notifier:
         self.notify_target = notify_target
 
     def _make_notify_slack_message(self, caname: str, added: List[str]):
-        template = "CRLset changed for %s\nAdded new serials: %d\n%s"
+        template = "Intermediate cert was revoked by CRLset:\n%s\nThat chain up to following root: %s"
 
-        return template % (caname, len(added), "\n".join(added))
+        return template % ("\n".join(added), caname)
 
     def _make_notify_twitter_message(self, caname: str, added: List[str]):
-        template = "CRLset changed for %s\nAdded new serials: %d\n"
+        template1 = "Intermediate cert was revoked by CRLset:\n%s\nThat chain up to following root: %s"
+        template2 = "Some intermediate cert were revoked by CRLset. That chain up to following root: %s"
 
-        tmp_mes = template % (caname, len(added))
         serials = "\n".join(added)
+        tmp_mes = template1 % (serials, caname)
 
-        if len(tmp_mes) + len(serials) > self.twitter_message_length:
-            return tmp_mes
+        if len(tmp_mes) > self.twitter_message_length:
+            return template2 % (caname)
 
-        return tmp_mes + serials
+        return tmp_mes
 
     def _notify_slack(self, message: str):
         result = requests.post(
@@ -70,8 +75,9 @@ class Notifier:
         if in_reply_to_status_id is None:
             ret = api.update_status(message)
         else:
-            ret = api.update_status(message,
-                                    in_reply_to_status_id=in_reply_to_status_id)
+            ret = api.update_status(
+                message,
+                in_reply_to_status_id=in_reply_to_status_id)
 
         LOGGER.debug("tweepy update_status: %s" % str(ret))
 
@@ -79,10 +85,35 @@ class Notifier:
 
     def _replay_detailed_cert_info(self, org_tweet, added: List[str]):
 
+        ccadb = None
+
+        try:
+            ccadb = ccadbloader.CCADBLoader(self.cnfg, self.cnfs)
+        except Exception as ex:
+            LOGGER.warning("CCADBの読み込みに失敗しました: %s" % (str(ex)))
+
         for serial in added:
             try:
+                certname = "unknown"
+                if ccadb is not None:
+                    try:
+                        tmp = ccadb.lookup_icaname_with_serial(serial)
+                        if len(tmp) == 1:
+                            certname = tmp[0]
+                        else:
+                            LOGGER.warning("CCADBでは一意に証明書を特定できませんでした")
+                    except Exception as ex:
+                        LOGGER.warning(
+                            "CCADBのLookup中にエラーが発生しました: %s" % (str(ex)))
+
                 crtsh_url = self.crtsh_base_url % serial
-                message = self.myaccount + " " + crtsh_url
+                template = "%s \nserial: %s\nname:%s\n%s"
+                message = template % (
+                    self.myaccount,
+                    serial,
+                    certname,
+                    crtsh_url)
+
                 self._notify_twitter(message, org_tweet.id)
             except Exception as ex:
                 LOGGER.warn("error while replay to original tweet: %s" %
