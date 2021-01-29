@@ -89,6 +89,7 @@ class Notifier:
 
         try:
             ccadb = ccadbloader.CCADBLoader(self.cnfg, self.cnfs)
+            ccadb.load_icalist()
         except Exception as ex:
             LOGGER.warning("CCADBの読み込みに失敗しました: %s" % (str(ex)))
 
