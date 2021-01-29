@@ -30,7 +30,7 @@ class CCADBDownloader(appframe.BaseApplication):
 
     def setup_application(self):
 
-        if not os.path.isdir(os.path.dirname(self.cnfs.icalist.path)):
+        if not os.path.isdir(os.path.dirname(self.cnfg.icalist.path)):
             LOGGER.error("中間証明書の一覧を保存するディレクトリがありません")
             raise Exception("中間証明書の一覧を保存するディレクトリがありません")
 
