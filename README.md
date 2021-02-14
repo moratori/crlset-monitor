@@ -4,6 +4,8 @@
 
 [https://twitter.com/crlsetmon](https://twitter.com/crlsetmon)
 
+![sample tweet](/tweet.jpg)
+
 ## Abstract
 
 This tool is for monitoring CRLset. CRLset is Chromium's original mechanism for managing certificate revocation status.
