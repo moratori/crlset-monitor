@@ -37,13 +37,13 @@ class Notifier:
         self.notify_target = notify_target
 
     def _make_notify_slack_message(self, caname: str, added: List[str]):
-        template = "⚠ Intermediate cert was revoked by Chrome's CRLset:\n%s\n\nThat chain up to following root: %s"
+        template = "⚠ ICA cert revoked by Chrome's CRLset:\n%s\n\nThat chain up to root cert: %s"
 
         return template % ("\n".join(added), caname)
 
     def _make_notify_twitter_message(self, caname: str, added: List[str]):
-        template1 = "⚠ Intermediate cert was revoked by Chrome's CRLset:\n%s\n\nThat chain up to following root: %s"
-        template2 = "⚠ Some intermediate cert were revoked by CRLset. That chain up to following root: %s"
+        template1 = "⚠ ICA cert revoked by Chrome's CRLset:\n%s\n\nThat chain up to root cert: %s"
+        template2 = "⚠ Some ICA cert were revoked by CRLset. That chain up to root cert: %s"
 
         serials = "\n".join(added)
         tmp_mes = template1 % (serials, caname)
